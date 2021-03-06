@@ -8,6 +8,9 @@ import java.util.List;
 public interface UserService extends UserDetailsService {
 
     User findByLastName(String lastname);
+    User findByLastName2(String lastname);
+
+
 
     User findById(Long id);
 
@@ -16,6 +19,8 @@ public interface UserService extends UserDetailsService {
     void saveUser(User user);
 
     void deleteById(Long id);
+    void deleteUser(User user);
+
 
     void updateUser(User user);
 

@@ -1,6 +1,5 @@
 package com.example.demo3.dao;
 
-import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.example.demo3.model.Role;
@@ -26,12 +25,15 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public User findByLastName(String lastname) {
-//        Session session = entityManager.unwrap(Session.class);
-//        TypedQuery<User> query = session.createQuery("SELECT u FROM User u WHERE u.lastName = :username", User.class);
-//        query.setParameter("username", lastname);
-//        return query.getSingleResult();
         TypedQuery<User> query = entityManager.createQuery(
-                "SELECT u FROM User u WHERE u.lastName = :username", User.class);
+                "SELECT u FROM User u WHERE u.email = :username", User.class);
+        return query.setParameter("username", lastname).getSingleResult();
+    }
+
+    @Override
+    public User findByLastName2(String lastname) {
+        TypedQuery<User> query = entityManager.createQuery(
+                "SELECT u FROM User u WHERE u.firstName = :username", User.class);
         return query.setParameter("username", lastname).getSingleResult();
     }
 
@@ -67,6 +69,18 @@ public class UserDaoImpl implements UserDao {
         if (user != null) {
             entityManager.remove(user);
         }
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        for (Role userRole : user.getRoles()) {
+            for (Role dbRole : roleDao.findAllRoles()) {
+                if (dbRole.getAuthority().equals(userRole.getAuthority())) {
+                    userRole.setId(dbRole.getId());
+                }
+            }
+        }
+        entityManager.remove(user);
     }
 
     @Override

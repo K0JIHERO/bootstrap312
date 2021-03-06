@@ -5,6 +5,7 @@
     <title>Create user</title>
 </head>
 <body>
+
 <form action="#" th:action="@{/admin/user-update}" th:object="${users}" method="post">
     <label for="id">ID</label>
     <input readonly type="number" th:field="*{id}" id="id" placeholder="ID">

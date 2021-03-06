@@ -1,10 +1,11 @@
 package com.example.demo3.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import com.example.demo3.model.Role;
 import com.example.demo3.model.User;
@@ -29,7 +30,7 @@ public class UserController {
 
     @GetMapping(value = "admin/user-list")
     public ModelAndView findAllAdmin(Principal principal, User createdUser) {
-        User currentUser = userService.findByLastName(principal.getName());
+        User currentUser = userService.findByLastName2(principal.getName());
         ModelAndView modelAndView = new ModelAndView();
         List<User> users = userService.findAll();
         Set<Role> uniqueRoles = roleService.findAllRoles();
@@ -46,10 +47,9 @@ public class UserController {
         return modelAndView;
     }
 
-
     @GetMapping(value = "user/user-list_")
     public ModelAndView findAllUser(Principal currentUser) {
-        User user = userService.findByLastName(currentUser.getName());
+        User user = userService.findByLastName2(currentUser.getName());
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("user/user-list_");
         modelAndView.addObject("currentUser", user);
@@ -76,9 +76,18 @@ public class UserController {
 
     @GetMapping("admin/user-delete/{id}")
     public ModelAndView deleteUser(@PathVariable("id") Long id) {
+        ModelAndView modelAndView = new ModelAndView("admin/user-delete");
+        modelAndView.addObject("users", userService.findById(id));
+        modelAndView.addObject("roles", roleService.findAllRoles());
+        return modelAndView;
+    }
+
+    @PostMapping("admin/user-delete/")
+    public ModelAndView deleteUser(User user) {
         ModelAndView modelAndView = new ModelAndView();
-        userService.deleteById(id);
+        userService.deleteUser(user);
         modelAndView.setViewName("redirect:/admin/user-list");
+        modelAndView.addObject("user", user);
         return modelAndView;
     }
 
@@ -98,4 +107,26 @@ public class UserController {
         modelAndView.addObject("user", user);
         return modelAndView;
     }
+
+    @GetMapping("/login")
+    public String showLoginPage() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication==null || authentication instanceof AnonymousAuthenticationToken) {
+            return "/login";
+        }
+        return "redirect:/";
+    }
+
+//    @RequestMapping(value = "admin/update", method = {RequestMethod.PUT, RequestMethod.GET})
+//    public String update(User user) {
+//        userService.updateUser(user);
+//        return "redirect:/admin/user-list";
+//    }
+
+    @RequestMapping("admin/getOne/")
+    @ResponseBody
+    public User getOne(Long id) {
+        return userService.findById(id);
+    }
+
 }

@@ -1,5 +1,8 @@
 package com.example.demo3.service;
 
+import com.fasterxml.jackson.annotation.JacksonAnnotation;
+import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
+import com.fasterxml.jackson.annotation.JacksonInject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,6 +16,7 @@ import com.example.demo3.model.User;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +33,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByLastName(String lastname) {
         return userDao.findByLastName(lastname);
+    }
+
+    @Transactional
+    @Override
+    public User findByLastName2(String lastname) {
+        return userDao.findByLastName2(lastname);
     }
 
     @Transactional
@@ -53,6 +63,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(Long id) {
         userDao.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUser(User user) {
+        userDao.deleteUser(user);
     }
 
     @Transactional

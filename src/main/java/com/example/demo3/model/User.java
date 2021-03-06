@@ -1,5 +1,6 @@
 package com.example.demo3.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,7 @@ public class User implements UserDetails {
     @Column
     private String password;
 
+    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -111,7 +113,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return lastName;
+        return email;
     }
 
     @Override
